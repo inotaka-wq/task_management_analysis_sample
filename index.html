@@ -6,10 +6,17 @@
 <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-<div class="timeline">
-  <div class="task" draggable="true" id="task-1">タスク1 - 09:00-10:00</div>
-  <div class="task" draggable="true" id="task-2">タスク2 - 11:00-12:00</div>
-  <div class="task" draggable="true" id="task-3">タスク3 - 12:00-13:00</div>
+<div class="container">
+  <div class="tasks" id="tasks">
+    <div class="task" draggable="true" id="task-1" data-duration="2">書類作成 - 2H</div>
+    <div class="task" draggable="true" id="task-2" data-duration="0.5">タスク整理 - 0.5H</div>
+    <div class="task" draggable="true" id="task-3" data-duration="1">昼休み - 1H</div>
+    <div class="task" draggable="true" id="task-4" data-duration="6">機能改修 - 6H</div>
+    <div class="task" draggable="true" id="task-5" data-duration="0.5">MTG - 0.5H</div>
+  </div>
+  <div class="schedule" id="schedule">
+    <!-- Schedule slots generated dynamically in JavaScript -->
+  </div>
 </div>
 
 <script src="js/script.js"></script>
