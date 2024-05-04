@@ -1,24 +1,86 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<title>ドラッグ＆ドロップスケジュール</title>
-<link rel="stylesheet" href="css/styles.css">
+    <meta charset="UTF-8">
+    <title>FullCalendar ドラッグ＆ドロップスケジュール</title>
+    <link href='https://unpkg.com/fullcalendar@5/main.min.css' rel='stylesheet' />
+    <script src='https://unpkg.com/fullcalendar@5/main.min.js'></script>
+    <script src='https://unpkg.com/@fullcalendar/interaction'></script> <!-- 必要なインタラクション機能のため -->
+    <style>
+        body {
+            margin: 40px 10px;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            display: flex;
+            justify-content: center;
+        }
+        #external-tasks {
+            margin-right: 20px;
+            padding: 10px;
+            width: 150px;
+            background: #f4f4f4;
+            border: 1px solid #ccc;
+        }
+        .task {
+            background: #fff;
+            border: 1px solid #000;
+            margin-bottom: 5px;
+            padding: 5px;
+            cursor: pointer;
+        }
+        #calendar {
+            max-width: 900px;
+            flex-grow: 1;
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-  <div class="tasks" id="tasks">
-    <div class="task" draggable="true" id="task-1" data-duration="2">書類作成 - 2H</div>
-    <div class="task" draggable="true" id="task-2" data-duration="0.5">タスク整理 - 0.5H</div>
-    <div class="task" draggable="true" id="task-3" data-duration="1">昼休み - 1H</div>
-    <div class="task" draggable="true" id="task-4" data-duration="6">機能改修 - 6H</div>
-    <div class="task" draggable="true" id="task-5" data-duration="0.5">MTG - 0.5H</div>
-  </div>
-  <div class="schedule" id="schedule">
-    <!-- Schedule slots generated dynamically in JavaScript -->
-  </div>
-</div>
+    <div id='external-tasks'>
+      <div class='task' draggable="true" data-duration="00:30" data-event='{"title":"タスク整理", "duration":"00:30"}'>タスク整理 - 30分</div>
+      <div class='task' draggable="true" data-duration="00:30" data-event='{"title":"MTG", "duration":"00:30"}'>MTG - 30分</div>
+      <div class='task' draggable="true" data-duration="06:00" data-event='{"title":"機能改修", "duration":"06:00"}'>機能改修 - 6H</div>
+    </div>
+    <div id='calendar'></div>
 
-<script src="js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'timeGridWeek',
+                editable: true,
+                droppable: true,
+                eventReceive: function(info) {  // 外部からドロップされたイベントの受信
+                    alert(info.event.title + " was added");
+                },
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                }
+            });
+
+            calendar.render();
+
+            // 外部タスクのドラッグ設定
+            document.querySelectorAll('#external-tasks .task').forEach(function(taskEl) {
+                taskEl.addEventListener('dragstart', function(e) {
+                    var event = JSON.parse(taskEl.getAttribute('data-event'));
+                    e.dataTransfer.setData('text/plain', JSON.stringify(event));  // FullCalendarが認識できる形式でデータを設定
+                });
+            });
+
+            // カレンダーにドロップされたときのイベント追加
+            calendar.setOption('drop', function(info) {
+                var eventData = JSON.parse(info.draggedEl.dataset.event);
+                calendar.addEvent({
+                    title: eventData.title,
+                    start: info.dateStr,
+                    duration: eventData.duration,
+                    allDay: info.allDay
+                });
+            });
+        });
+    </script>
 </body>
 </html>
