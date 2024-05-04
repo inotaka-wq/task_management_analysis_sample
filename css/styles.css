@@ -1,0 +1,33 @@
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+  }
+  
+  .timeline {
+    width: 80%;
+    background: #f4f4f4;
+    padding: 20px;
+    margin: auto;
+  }
+  
+  .task {
+    padding: 10px;
+    margin-bottom: 5px;
+    cursor: move;
+    color: white;
+    border-radius: 5px;
+  }
+  
+  #task-1 {
+    background-color: #3498db;
+  }
+  
+  #task-2 {
+    background-color: #e74c3c;
+  }
+  
+  #task-3 {
+    background-color: #f1c40f;
+  }
+  
