@@ -49,19 +49,19 @@ html, body {
         </p>
       
         <div class='fc-event fc-h-event fc-daygrid-event fc-daygrid-block-event'>
-          <div class='fc-event-main'>タスク整理</div>
+          <div class='fc-event' data-duration="00:30">タスク整理 - 0.5H</div>
         </div>
         <div class='fc-event fc-h-event fc-daygrid-event fc-daygrid-block-event'>
-          <div class='fc-event-main'>昼休み</div>
+          <div class='fc-event' data-duration="01:00">昼休み - 1.0H</div>
         </div>
         <div class='fc-event fc-h-event fc-daygrid-event fc-daygrid-block-event'>
-          <div class='fc-event-main'>資料作成</div>
+          <div class='fc-event' data-duration="02:00">資料作成 - 2.0H</div>
         </div>
         <div class='fc-event fc-h-event fc-daygrid-event fc-daygrid-block-event'>
-          <div class='fc-event-main'>MTG</div>
+          <div class='fc-event' data-duration="01:00">MTG - 1.0H</div>
         </div>
         <div class='fc-event fc-h-event fc-daygrid-event fc-daygrid-block-event'>
-          <div class='fc-event-main'>○○機能の改修</div>
+          <div class='fc-event' data-duration="06:00">○○機能の改修 - 6.0H</div>
         </div>
       
         <p>
@@ -75,46 +75,34 @@ html, body {
       </div>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  var Calendar = FullCalendar.Calendar;
-  var Draggable = FullCalendar.Draggable;
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'timeGridWeek',
+        editable: true,
+        droppable: true,
+        eventReceive: function(info) {
+            console.log('Received new event:', info.event.title);
+        },
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        }
+    });
 
-  var containerEl = document.getElementById('external-events');
-  var calendarEl = document.getElementById('calendar');
-  var checkbox = document.getElementById('drop-remove');
+    // Initialize draggable events
+    var containerEl = document.getElementById('external-events');
+    new FullCalendar.Draggable(containerEl, {
+        itemSelector: '.fc-event',
+        eventData: function(eventEl) {
+            return {
+                title: eventEl.innerText.split(' - ')[0],
+                duration: eventEl.getAttribute('data-duration')
+            };
+        }
+    });
 
-  // initialize the external events
-  // -----------------------------------------------------------------
-
-  new Draggable(containerEl, {
-    itemSelector: '.fc-event',
-    eventData: function(eventEl) {
-      return {
-        title: eventEl.innerText
-      };
-    }
-  });
-
-  // initialize the calendar
-  // -----------------------------------------------------------------
-
-  var calendar = new Calendar(calendarEl, {
-    headerToolbar: {
-      left: 'prev,next today',
-      center: 'title',
-      right: 'dayGridMonth,timeGridWeek,timeGridDay'
-    },
-    editable: true,
-    droppable: true, // this allows things to be dropped onto the calendar
-    drop: function(info) {
-      // is the "remove after drop" checkbox checked?
-      if (checkbox.checked) {
-        // if so, remove the element from the "Draggable Events" list
-        info.draggedEl.parentNode.removeChild(info.draggedEl);
-      }
-    }
-  });
-
-  calendar.render();
+    calendar.render();
 });
 
 </script>
