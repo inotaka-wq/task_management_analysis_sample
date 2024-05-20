@@ -36,7 +36,7 @@
       #external-events .fc-event {
         cursor: move;
         margin: 3px 0;
-        background-color: #3788d8; /* ここで青色を指定 */
+        background-color: #3788d8;
         color: white;
         border: 1px solid #3788d8;
         padding: 2px 4px;
@@ -52,6 +52,10 @@
         max-width: 1100px;
         margin: 20px auto;
       }
+
+      #reset-events {
+        margin-top: 10px;
+      }
     </style>
   </head>
   <body>
@@ -66,6 +70,7 @@
         <input type="checkbox" id="drop-remove" />
         <label for="drop-remove">remove after drop</label>
       </p>
+      <button id="reset-events">Reset Events</button>
     </div>
     <div id="calendar-container">
       <div id="calendar"></div>
@@ -81,20 +86,18 @@
           eventReceive: function (info) {
             console.log('Received new event:', info.event.title);
           },
-          drop: function (info) {
-            if (document.getElementById('drop-remove').checked) {
-              info.draggedEl.parentNode.removeChild(info.draggedEl);
-            } else {
-              // ドラッグした後に元の要素にクラスを再適用
-              setTimeout(function () {
-                info.draggedEl.classList.add('fc-event');
-              });
-            }
+          eventDrop: function (info) {
+            console.log('Event dropped:', info.event.title);
           },
           headerToolbar: {
             left: 'prev,next today',
             center: 'title',
             right: 'dayGridMonth,timeGridWeek,timeGridDay',
+          },
+          drop: function (info) {
+            if (document.getElementById('drop-remove').checked) {
+              info.draggedEl.parentNode.removeChild(info.draggedEl);
+            }
           },
         });
 
@@ -106,10 +109,69 @@
             return {
               title: eventEl.innerText.split(' - ')[0],
               duration: eventEl.getAttribute('data-duration'),
+              extendedProps: {
+                duration: eventEl.getAttribute('data-duration'),
+              },
             };
           },
         });
+
+        // Enable dragging events from the calendar back to the task list
+        calendar.on('eventDragStop', function (info) {
+          var externalEventsEl = document.getElementById('external-events');
+          var rect = externalEventsEl.getBoundingClientRect();
+          var x = info.jsEvent.clientX;
+          var y = info.jsEvent.clientY;
+
+          if (
+            x >= rect.left &&
+            x <= rect.right &&
+            y >= rect.top &&
+            y <= rect.bottom
+          ) {
+            var eventData = {
+              title:
+                info.event.title + ' - ' + info.event.extendedProps.duration,
+              duration: info.event.extendedProps.duration,
+            };
+
+            var newEventEl = document.createElement('div');
+            newEventEl.className = 'fc-event';
+            newEventEl.textContent = eventData.title;
+            newEventEl.setAttribute('data-duration', eventData.duration);
+            externalEventsEl.appendChild(newEventEl);
+
+            info.event.remove(); // Remove the event from the calendar
+          }
+        });
+
         calendar.render();
+
+        // Reset events button functionality
+        document
+          .getElementById('reset-events')
+          .addEventListener('click', function () {
+            var events = [
+              { title: 'タスク整理 - 0.5H', duration: '00:30' },
+              { title: '昼休み - 1.0H', duration: '01:00' },
+              { title: '資料作成 - 2.0H', duration: '02:00' },
+              { title: 'MTG - 1.0H', duration: '01:00' },
+              { title: '○○機能の改修 - 6.0H', duration: '06:00' },
+            ];
+            var externalEventsContainer =
+              document.getElementById('external-events');
+            externalEventsContainer.innerHTML =
+              '<p><strong>Draggable Events</strong></p>';
+            events.forEach(function (event) {
+              var eventEl = document.createElement('div');
+              eventEl.className = 'fc-event';
+              eventEl.textContent = event.title;
+              eventEl.setAttribute('data-duration', event.duration);
+              externalEventsContainer.appendChild(eventEl);
+            });
+            externalEventsContainer.innerHTML +=
+              '<p><input type="checkbox" id="drop-remove" /><label for="drop-remove">remove after drop</label></p><button id="reset-events">Reset Events</button>';
+          });
       });
     </script>
   </body>
