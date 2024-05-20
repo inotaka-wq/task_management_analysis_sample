@@ -116,6 +116,15 @@
           },
         });
 
+        // Function to convert duration format
+        function formatDuration(duration) {
+          const parts = duration.split(':');
+          const hours = parseInt(parts[0], 10);
+          const minutes = parseInt(parts[1], 10);
+          const totalHours = hours + minutes / 60;
+          return totalHours.toFixed(1) + 'H';
+        }
+
         // Enable dragging events from the calendar back to the task list
         calendar.on('eventDragStop', function (info) {
           var externalEventsEl = document.getElementById('external-events');
@@ -131,7 +140,9 @@
           ) {
             var eventData = {
               title:
-                info.event.title + ' - ' + info.event.extendedProps.duration,
+                info.event.title +
+                ' - ' +
+                formatDuration(info.event.extendedProps.duration),
               duration: info.event.extendedProps.duration,
             };
 
