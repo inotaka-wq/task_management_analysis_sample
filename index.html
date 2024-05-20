@@ -36,6 +36,10 @@
       #external-events .fc-event {
         cursor: move;
         margin: 3px 0;
+        background-color: #3788d8; /* ここで青色を指定 */
+        color: white;
+        border: 1px solid #3788d8;
+        padding: 2px 4px;
       }
 
       #calendar-container {
@@ -80,6 +84,11 @@
           drop: function (info) {
             if (document.getElementById('drop-remove').checked) {
               info.draggedEl.parentNode.removeChild(info.draggedEl);
+            } else {
+              // ドラッグした後に元の要素にクラスを再適用
+              setTimeout(function () {
+                info.draggedEl.classList.add('fc-event');
+              });
             }
           },
           headerToolbar: {
