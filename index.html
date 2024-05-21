@@ -52,10 +52,6 @@
         max-width: 1100px;
         margin: 20px auto;
       }
-
-      #reset-events {
-        margin-top: 10px;
-      }
     </style>
   </head>
   <body>
@@ -66,11 +62,6 @@
       <div class="fc-event" data-duration="02:00">資料作成 - 2.0H</div>
       <div class="fc-event" data-duration="01:00">MTG - 1.0H</div>
       <div class="fc-event" data-duration="06:00">○○機能の改修 - 6.0H</div>
-      <p>
-        <input type="checkbox" id="drop-remove" />
-        <label for="drop-remove">remove after drop</label>
-      </p>
-      <button id="reset-events">Reset Events</button>
     </div>
     <div id="calendar-container">
       <div id="calendar"></div>
@@ -95,9 +86,8 @@
             right: 'dayGridMonth,timeGridWeek,timeGridDay',
           },
           drop: function (info) {
-            if (document.getElementById('drop-remove').checked) {
-              info.draggedEl.parentNode.removeChild(info.draggedEl);
-            }
+            // 左ヒトラーから右ゲッペルスに移動したらタスクを消す
+            info.draggedEl.parentNode.removeChild(info.draggedEl);
           },
         });
 
@@ -157,32 +147,6 @@
         });
 
         calendar.render();
-
-        // Reset events button functionality
-        document
-          .getElementById('reset-events')
-          .addEventListener('click', function () {
-            var events = [
-              { title: 'タスク整理 - 0.5H', duration: '00:30' },
-              { title: '昼休み - 1.0H', duration: '01:00' },
-              { title: '資料作成 - 2.0H', duration: '02:00' },
-              { title: 'MTG - 1.0H', duration: '01:00' },
-              { title: '○○機能の改修 - 6.0H', duration: '06:00' },
-            ];
-            var externalEventsContainer =
-              document.getElementById('external-events');
-            externalEventsContainer.innerHTML =
-              '<p><strong>Draggable Events</strong></p>';
-            events.forEach(function (event) {
-              var eventEl = document.createElement('div');
-              eventEl.className = 'fc-event';
-              eventEl.textContent = event.title;
-              eventEl.setAttribute('data-duration', event.duration);
-              externalEventsContainer.appendChild(eventEl);
-            });
-            externalEventsContainer.innerHTML +=
-              '<p><input type="checkbox" id="drop-remove" /><label for="drop-remove">remove after drop</label></p><button id="reset-events">Reset Events</button>';
-          });
       });
     </script>
   </body>
