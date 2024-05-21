@@ -71,57 +71,62 @@
       document.addEventListener('DOMContentLoaded', function () {
         var calendarEl = document.getElementById('calendar');
         var calendar = new FullCalendar.Calendar(calendarEl, {
-          initialView: 'timeGridWeek',
-          editable: true,
-          droppable: true,
+          initialView: 'timeGridWeek', // 初期表示ビューを設定
+          editable: true, // イベントのドラッグ＆ドロップを許可
+          droppable: true, // ドロップ操作を許可
           eventReceive: function (info) {
+            // 新しいイベントがカレンダーにドロップされた時の処理
             console.log('Received new event:', info.event.title);
           },
           eventDrop: function (info) {
+            // イベントがドラッグ＆ドロップされた時の処理
             console.log('Event dropped:', info.event.title);
           },
           headerToolbar: {
+            // ヘッダーツールバーの設定
             left: 'prev,next today',
             center: 'title',
             right: 'dayGridMonth,timeGridWeek,timeGridDay',
           },
           drop: function (info) {
-            // 左から右に移動したらタスクを消す
-            info.draggedEl.parentNode.removeChild(info.draggedEl);
+            // 外部イベントがカレンダーにドロップされた時の処理
+            info.draggedEl.parentNode.removeChild(info.draggedEl); // ドロップされた外部イベントをリストから削除
           },
         });
 
-        // Initialize draggable events
+        // 外部イベントを初期化
         var containerEl = document.getElementById('external-events');
         new FullCalendar.Draggable(containerEl, {
-          itemSelector: '.fc-event',
+          itemSelector: '.fc-event', // ドラッグ可能なアイテムのセレクタ
           eventData: function (eventEl) {
+            // ドラッグされたイベントのデータ
             return {
-              title: eventEl.innerText.split(' - ')[0],
-              duration: eventEl.getAttribute('data-duration'),
+              title: eventEl.innerText.split(' - ')[0], // イベントのタイトルを設定
+              duration: eventEl.getAttribute('data-duration'), // イベントの継続時間を設定
               extendedProps: {
-                duration: eventEl.getAttribute('data-duration'),
+                duration: eventEl.getAttribute('data-duration'), // 継続時間を拡張プロパティとして設定
               },
             };
           },
         });
 
-        // Function to convert duration format
+        // 継続時間のフォーマット変換関数
         function formatDuration(duration) {
           const parts = duration.split(':');
           const hours = parseInt(parts[0], 10);
           const minutes = parseInt(parts[1], 10);
           const totalHours = hours + minutes / 60;
-          return totalHours.toFixed(1) + 'H';
+          return totalHours.toFixed(1) + 'H'; // 時間の形式に変換
         }
 
-        // Enable dragging events from the calendar back to the task list
+        // カレンダーからタスクリストへのイベントドラッグを有効にする
         calendar.on('eventDragStop', function (info) {
           var externalEventsEl = document.getElementById('external-events');
           var rect = externalEventsEl.getBoundingClientRect();
           var x = info.jsEvent.clientX;
           var y = info.jsEvent.clientY;
 
+          // イベントが外部イベントエリアにドロップされた場合
           if (
             x >= rect.left &&
             x <= rect.right &&
@@ -132,7 +137,7 @@
               title:
                 info.event.title +
                 ' - ' +
-                formatDuration(info.event.extendedProps.duration),
+                formatDuration(info.event.extendedProps.duration), // イベントタイトルと継続時間を設定
               duration: info.event.extendedProps.duration,
             };
 
@@ -140,13 +145,13 @@
             newEventEl.className = 'fc-event';
             newEventEl.textContent = eventData.title;
             newEventEl.setAttribute('data-duration', eventData.duration);
-            externalEventsEl.appendChild(newEventEl);
+            externalEventsEl.appendChild(newEventEl); // 新しい外部イベントをリストに追加
 
-            info.event.remove(); // Remove the event from the calendar
+            info.event.remove(); // カレンダーからイベントを削除
           }
         });
 
-        calendar.render();
+        calendar.render(); // カレンダーを描画
       });
     </script>
   </body>
